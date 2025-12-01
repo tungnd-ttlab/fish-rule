@@ -19,5 +19,5 @@ class SessionRepository(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(self, session_id: SessionId) -> None:
+    async def delete(self, user_id: UserId) -> None:
         raise NotImplementedError

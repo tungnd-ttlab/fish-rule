@@ -1,5 +1,6 @@
 from dishka import Provider, provide, Scope
 
+from application.interactors.external.delete_file import DeleteFileInteractor
 from application.interactors.external.list_file import ListFileInteractor
 from application.interactors.external.postfile import PostFileInteractor
 from application.interactors.login_user import LoginUserInteractor
@@ -15,3 +16,4 @@ class InteractorProvider(Provider):
     logout_user = provide(LogoutUserInteractor)
     post_file = provide(PostFileInteractor)
     list_file = provide(ListFileInteractor)
+    delete_file = provide(DeleteFileInteractor)

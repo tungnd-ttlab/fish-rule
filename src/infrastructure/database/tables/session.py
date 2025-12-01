@@ -17,6 +17,7 @@ sessions_table = Table(
     ),
     Column("expires_at", DateTime(timezone=True), nullable=False),
     Column("is_active", Boolean, default=True, nullable=False),
+    Column("deleted_at", DateTime(timezone=True), nullable=True),
 )
 
 

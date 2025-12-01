@@ -1,4 +1,4 @@
-from sqlalchemy import String, Table, Column, Boolean, UUID
+from sqlalchemy import String, Table, Column, Boolean, UUID, DateTime
 
 from domain.entities.user import User
 from infrastructure.database.tables.base import metadata, mapper_registry
@@ -10,6 +10,7 @@ users_table = Table(
     Column("email", String(256), unique=True, nullable=False),
     Column("hashed_password", String(1024), nullable=False),
     Column("is_active", Boolean, default=True, nullable=False),
+    Column("deleted_at", DateTime(timezone=True), nullable=True),
 )
 
 

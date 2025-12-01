@@ -31,6 +31,6 @@ class SQLSessionRepository(SessionRepository):
         result = await self._session.execute(stmt)
         return list(result.scalars())
 
-    async def delete(self, session_id: SessionId) -> None:
-        stmt = delete(Session).where(sessions_table.c.id == session_id)
+    async def delete(self, user_id: UserId) -> None:
+        stmt = delete(Session).where(sessions_table.c.user_id == user_id)
         await self._session.execute(stmt)

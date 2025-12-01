@@ -4,6 +4,7 @@ from fastapi import APIRouter
 from starlette import status
 
 from application.interactors.login_user import (
+    LoginResponse,
     LoginUserInteractor,
     LoginUserRequest,
 )
@@ -34,7 +35,7 @@ async def register(
 
 @router.post(
     "/login",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
     responses={
         401: {"description": "Invalid username of password"},
         403: {"description": "User is not active"},
@@ -43,7 +44,7 @@ async def register(
 @inject
 async def login(
     data: LoginUserRequest, login_user: FromDishka[LoginUserInteractor]
-) -> None:
+) -> LoginResponse:
     return await login_user(data)
 
 

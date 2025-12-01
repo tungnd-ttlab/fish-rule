@@ -21,3 +21,9 @@ class LogInError(ApplicationError):
 
 class AuthenticationRequiredError(ApplicationError):
     pass
+
+
+
+class NotFoundError(ApplicationError):
+    pass
+    

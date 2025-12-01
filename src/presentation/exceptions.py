@@ -63,3 +63,10 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"detail": "Authentication required to perform this action"},
         )
+
+    @app.exception_handler(app_exc.NotFoundError)
+    async def not_found_handler(_: Request, exc: Exception) -> JSONResponse:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"message": str(exc)},
+        )

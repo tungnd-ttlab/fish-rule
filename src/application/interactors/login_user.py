@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, UTC
 
-from asyncpg.pgproto.pgproto import timedelta
+from datetime import timedelta
 
 from application.exceptions import InvalidCredentialsError, LogInError
 from application.interfaces.session_generator import SessionIdGenerator
@@ -19,6 +19,11 @@ from main.config import SessionConfig
 class LoginUserRequest:
     email: str
     password: str
+
+@dataclass
+class LoginResponse:
+    session_id:str
+    
 
 
 class LoginUserInteractor:
@@ -42,7 +47,7 @@ class LoginUserInteractor:
         self._identity_provider = identity_provider
         self._session_config = session_config
 
-    async def __call__(self, data: LoginUserRequest) -> None:
+    async def __call__(self, data: LoginUserRequest) -> LoginResponse:
         is_authenticated: bool = await self._identity_provider.is_authenticated()
         if is_authenticated:
             raise LogInError
@@ -60,9 +65,16 @@ class LoginUserInteractor:
             minutes=self._session_config.lifetime_minutes
         )
         session: Session = Session(
-            id=session_id, user_id=user.id, expires_at=expires_at
+            id=session_id, user_id=user.id, expires_at=expires_at , created_at=datetime.now(UTC)
         )
-        await self._session_repository.create(session)
-        await self._transaction_manager.commit()
 
-        self._request_manager.add_session_id_to_request(session.id)
+        try: 
+            await self._session_repository.delete(user.id)
+            await self._session_repository.create(session)
+        except Exception as e:
+            await self._transaction_manager.rollback()
+            raise e
+        finally:
+            await self._transaction_manager.commit()    
+
+        return LoginResponse(session_id=str(session.id))

@@ -12,3 +12,7 @@ class IdentityProvider(Protocol):
     @abstractmethod
     async def is_authenticated(self) -> bool:
         pass
+
+    @abstractmethod
+    async def require_authenticated_user(self) -> UserId:
+        pass

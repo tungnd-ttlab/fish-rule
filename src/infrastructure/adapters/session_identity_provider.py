@@ -1,5 +1,6 @@
 from datetime import datetime, UTC
 
+from application.exceptions import AuthenticationRequiredError
 from application.interfaces.identity_provider import IdentityProvider
 from application.interfaces.request_manager import RequestManager
 from application.interfaces.session_repository import SessionRepository
@@ -36,7 +37,6 @@ class SessionIdentityProvider(IdentityProvider):
     async def is_authenticated(self) -> bool:
         if self._is_authenticated is not None:
             return self._is_authenticated
-
         session_id: SessionId = self._request_manager.get_session_id_from_request()
         if session_id is None:
             self._is_authenticated = False
@@ -54,4 +54,15 @@ class SessionIdentityProvider(IdentityProvider):
 
         self._current_user_id = session.user_id
         self._is_authenticated = True
+
         return True
+    
+    async def require_authenticated_user(self) -> UserId:
+        is_authenticated = await self.is_authenticated()
+        if not is_authenticated:
+            raise AuthenticationRequiredError("User is not authenticated")
+        
+        try:
+            return await self.get_current_user_id()
+        except Exception:
+            raise AuthenticationRequiredError("User is not authenticated")

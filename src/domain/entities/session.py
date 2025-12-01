@@ -14,3 +14,4 @@ class Session:
     expires_at: datetime
     created_at: datetime
     is_active: bool = True
+    deleted_at: datetime | None = None

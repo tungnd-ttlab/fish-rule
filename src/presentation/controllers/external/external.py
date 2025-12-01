@@ -1,9 +1,11 @@
+from typing import Annotated
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 from starlette import status
 
 from dishka import FromDishka
 
+from application.interactors.external.delete_file import DeleteFileInteractor, DeleteFileRequest
 from application.interactors.external.list_file import (ListFileRequest, ListFileResponse ,ListFileInteractor)
 from application.interactors.external.postfile import (
     PostFileRequest,
@@ -37,7 +39,21 @@ async def postImg(
 )
 @inject
 async def listImg(
-    data: ListFileRequest,
+    data: Annotated[ListFileRequest , Query()],
     list_file: FromDishka[ListFileInteractor],
 ) -> ListFileResponse:
     return await list_file(data)
+
+@router.delete(
+    "/img/{file_id}",
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"description": "Bad Request"},
+    },
+)
+@inject
+async def deleteImg(
+    file_id: int,
+    delete_file: FromDishka[DeleteFileInteractor],
+) -> None:
+    await delete_file(DeleteFileRequest(file_id=file_id))

@@ -1,9 +1,14 @@
 from abc import abstractmethod
 from typing import Protocol
 from domain.entities.file import File
+from domain.entities.user import User
 
 
 class FileRepository(Protocol):
+    @abstractmethod
+    async def delete(self, file_id: int) -> None:
+        raise NotImplementedError
+
     @abstractmethod
     async def create(self, file: File) -> File:
         raise NotImplementedError
@@ -21,5 +26,5 @@ class FileRepository(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_files(self, page: int, page_size: int) -> list[File]:
+    async def get_files(self, page: int, page_size: int) -> list[tuple[File , User]]:
         raise NotImplementedError
