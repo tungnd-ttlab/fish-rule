@@ -1,25 +1,55 @@
 services:
   backend:
     build: .
-    env_file: .env
+    env_file: .env.docker.env
     restart: always
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      # Override POSTGRES_HOST to use service name in Docker network
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend_network
 
   postgres:
     image: postgres:16-alpine
     restart: always
     env_file: .env
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: dev
+      POSTGRES_USER: dev
+      POSTGRES_DB: fish_ruler
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+networks:
+  backend_network:
 
 volumes:
   postgres_data:

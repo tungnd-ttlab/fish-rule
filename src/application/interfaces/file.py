@@ -26,5 +26,10 @@ class FileRepository(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_files(self, page: int, page_size: int) -> list[tuple[File , User]]:
+    async def get_files(self, page: int, page_size: int) -> list[tuple[File, User | None]]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    async def count_files(self) -> int:
+        """Count total files (excluding soft deleted) for pagination"""
         raise NotImplementedError

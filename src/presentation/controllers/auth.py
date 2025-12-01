@@ -1,7 +1,6 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
-from starlette import status
 
 from application.interactors.login_user import (
     LoginResponse,
@@ -14,15 +13,27 @@ from application.interactors.register_user import (
     RegisterUserRequest,
     RegisterUserResponse,
 )
+from presentation.constants import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_409_CONFLICT,
+    ERROR_UNAUTHORIZED,
+    ERROR_INVALID_CREDENTIALS,
+    ERROR_USER_NOT_ACTIVE,
+    ERROR_USER_ALREADY_EXISTS,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post(
     "/register",
-    status_code=status.HTTP_201_CREATED,
+    status_code=HTTP_201_CREATED,
     responses={
-        409: {"description": "User already exists"},
+        HTTP_409_CONFLICT: {"description": ERROR_USER_ALREADY_EXISTS},
     },
 )
 @inject
@@ -35,10 +46,10 @@ async def register(
 
 @router.post(
     "/login",
-    status_code=status.HTTP_200_OK,
+    status_code=HTTP_200_OK,
     responses={
-        401: {"description": "Invalid username of password"},
-        403: {"description": "User is not active"},
+        HTTP_401_UNAUTHORIZED: {"description": ERROR_INVALID_CREDENTIALS},
+        HTTP_403_FORBIDDEN: {"description": ERROR_USER_NOT_ACTIVE},
     },
 )
 @inject
@@ -50,9 +61,9 @@ async def login(
 
 @router.post(
     "/logout",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=HTTP_204_NO_CONTENT,
     responses={
-        401: {"description": "Authentication required"},
+        HTTP_401_UNAUTHORIZED: {"description": ERROR_UNAUTHORIZED},
     },
 )
 @inject
