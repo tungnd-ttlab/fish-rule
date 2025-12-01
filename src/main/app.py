@@ -11,9 +11,12 @@ from presentation.middlewares.session import SessionMiddleware
 
 from dishka import AsyncContainer
 
+from presentation.controllers.external import external
+
 
 def setup_routers(app: FastAPI) -> None:
     app.include_router(auth.router)
+    app.include_router(external.router)
 
 
 def setup_middlewares(app: FastAPI, config: Config) -> None:
@@ -27,8 +30,8 @@ def create_application() -> FastAPI:
     app: FastAPI = FastAPI(title=config.app.title, debug=config.app.debug)
 
     container: AsyncContainer = create_container(config)
-    setup_dishka(container, app)
 
+    setup_dishka(container, app)
     setup_routers(app)
     setup_middlewares(app, config)
     register_exception_handlers(app)

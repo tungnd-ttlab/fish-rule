@@ -12,5 +12,5 @@ class Session:
     id: SessionId
     user_id: UserId
     expires_at: datetime
-    created_at: datetime = None
+    created_at: datetime
     is_active: bool = True

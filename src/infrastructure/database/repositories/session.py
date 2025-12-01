@@ -7,6 +7,7 @@ from sqlalchemy.sql.operators import is_
 from application.interfaces.session_repository import SessionRepository
 from domain.entities.session import Session, SessionId
 from domain.entities.user import UserId
+from infrastructure.database.tables.session import sessions_table
 
 
 class SQLSessionRepository(SessionRepository):
@@ -23,13 +24,13 @@ class SQLSessionRepository(SessionRepository):
 
     async def get_active_by_user_id(self, user_id: UserId) -> list[Session]:
         stmt = select(Session).where(
-            (Session.user_id == user_id),
-            is_(Session.is_active, True),
-            (Session.expires_at > datetime.now(UTC)),
+            (sessions_table.c.user_id == user_id),
+            is_(sessions_table.c.is_active, True),
+            (sessions_table.c.expires_at > datetime.now(UTC)),
         )
         result = await self._session.execute(stmt)
         return list(result.scalars())
 
     async def delete(self, session_id: SessionId) -> None:
-        stmt = delete(Session).where(Session.id == session_id)
+        stmt = delete(Session).where(sessions_table.c.id == session_id)
         await self._session.execute(stmt)

@@ -53,8 +53,10 @@ cd fastapi-clean-architecture
 
 2. Install dependencies:
 
+```bash
 #set poetry 
 poetry config virtualenvs.in-project true
+```
 
 ```bash
 poetry install
@@ -78,7 +80,7 @@ poetry run alembic upgrade head
 ```bash
 # Option 1: Using the run script (easiest)
 ./run.sh
-
+./dev.sh #Run + watch  
 # Option 2: Using PYTHONPATH directly
 PYTHONPATH=./src poetry run uvicorn src.main.app:create_application --factory
 
