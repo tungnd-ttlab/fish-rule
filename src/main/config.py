@@ -9,7 +9,8 @@ from sqlalchemy import URL
 class BaseSettings(_BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore",
-        env_file=".env",
+        # Try .env.docker.env first (for Docker), then fallback to .env (for local dev)
+        env_file=[".env.docker.env", ".env"],
         env_file_encoding="utf-8",
     )
 
